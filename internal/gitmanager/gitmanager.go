@@ -36,3 +36,10 @@ func Clone(url string) (*Repository, error) {
 	return &Repository{Repository: *repo, Path: gitRepoPath}, nil
 
 }
+
+func Delete(repository *Repository) error{
+	
+	return os.RemoveAll(repository.Path)	
+
+}
+
