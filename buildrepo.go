@@ -14,7 +14,7 @@ func GetInstructions(repositoryUrl string) (string, error) {
 		return "", err
 
 	}
-	
+
 	defer gitmanager.Delete(repo)
 
 	worktree, err := repo.Worktree()
@@ -54,6 +54,12 @@ func GetInstructions(repositoryUrl string) (string, error) {
 	s = s[:len(s)-1]
 
 	// remove repo for now
+
+	if err = gitmanager.Delete(repo); err != nil {
+
+		return "", err
+
+	}
 
 	return s, nil
 
