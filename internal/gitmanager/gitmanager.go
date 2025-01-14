@@ -37,9 +37,8 @@ func Clone(url string) (*Repository, error) {
 
 }
 
-func Delete(repository *Repository) error{
-	
-	return os.RemoveAll(repository.Path)	
+func Delete(repository *Repository) error {
+
+	return os.RemoveAll(repository.Path)
 
 }
-

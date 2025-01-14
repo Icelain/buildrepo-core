@@ -7,7 +7,7 @@ import (
 
 func Test_GetInstructions(t *testing.T) {
 
-	uri := "https://github.com/ollama/ollama"
+	uri := "https://github.com/icelain/radio"
 	res, err := GetInstructions(uri)
 
 	if err != nil {
