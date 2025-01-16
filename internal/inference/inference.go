@@ -1,5 +1,7 @@
 package inference
 
+import "os"
+
 const PROMPT string = `
 
 	You will be provided with a direntry of a git repository. Directories will be marked with [DIR] and files will be marked with [FILE].
@@ -11,3 +13,11 @@ const PROMPT string = `
 	OUTPUT {output terminal command if you're convinced with your analysis of the project}
 
 `
+
+var GROQ_API_KEY = os.Getenv("GROQ_API_KEY")
+
+func Request(data []byte) {
+	
+	headers := 	
+
+}
