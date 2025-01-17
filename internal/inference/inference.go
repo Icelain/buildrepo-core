@@ -19,6 +19,8 @@ const PROMPT string = `
 	READFILE {path file in the project, which you've confirmed exists through the provided direntry} -> Sending this message will provide you with the contents of the file.
 	OUTPUT {output terminal command if you're convinced with your analysis of the project}
 
+	Do not say anything other than the way you're instructed to communicate in.
+
 `
 
 func Request(data []byte) error {
