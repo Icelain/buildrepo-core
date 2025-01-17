@@ -21,10 +21,9 @@ const PROMPT string = `
 
 `
 
-var GROQ_API_KEY = os.Getenv("GROQ_API_KEY")
-
 func Request(data []byte) error {
 
+	var GROQ_API_KEY = os.Getenv("GROQ_API_KEY")
 	headers := make(http.Header)
 	headers.Add("Content-Type", "application/json")
 	headers.Add("Authorization", fmt.Sprintf("Bearer %s", GROQ_API_KEY))
@@ -34,7 +33,7 @@ func Request(data []byte) error {
 		"model": "llama-3.3-70b-versatile",
 		"messages": []map[string]string{{
 			"role":    "user",
-			"content": "Explain the importance of fast language models",
+			"content": string(data),
 		},
 			{
 				"role":    "system",
@@ -71,7 +70,7 @@ func Request(data []byte) error {
 
 	respBytes, err := io.ReadAll(resp.Body)
 
-	fmt.Println(respBytes)
+	fmt.Println(string(respBytes))
 
 	return nil
 
