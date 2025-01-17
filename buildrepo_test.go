@@ -1,6 +1,7 @@
 package buildrepocore
 
 import (
+	"buildrepo-core/internal/inference"
 	"log"
 	"testing"
 )
@@ -16,6 +17,6 @@ func Test_GetInstructions(t *testing.T) {
 
 	}
 
-	log.Println(res)
+	inference.Request([]byte(res))
 
 }

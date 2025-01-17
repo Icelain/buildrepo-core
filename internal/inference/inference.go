@@ -1,6 +1,13 @@
 package inference
 
-import "os"
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+)
 
 const PROMPT string = `
 
@@ -16,8 +23,56 @@ const PROMPT string = `
 
 var GROQ_API_KEY = os.Getenv("GROQ_API_KEY")
 
-func Request(data []byte) {
-	
-	headers := 	
+func Request(data []byte) error {
+
+	headers := make(http.Header)
+	headers.Add("Content-Type", "application/json")
+	headers.Add("Authorization", fmt.Sprintf("Bearer %s", GROQ_API_KEY))
+
+	content := map[string]any{
+
+		"model": "llama-3.3-70b-versatile",
+		"messages": []map[string]string{{
+			"role":    "user",
+			"content": "Explain the importance of fast language models",
+		},
+			{
+				"role":    "system",
+				"content": PROMPT,
+			},
+		},
+	}
+
+	requestBody := &bytes.Buffer{}
+	if err := json.NewEncoder(requestBody).Encode(content); err != nil {
+
+		return err
+
+	}
+
+	req, err := http.NewRequest(http.MethodPost, "https://api.groq.com/openai/v1/chat/completions", requestBody)
+	if err != nil {
+		return err
+	}
+
+	req.Header = headers
+
+	client := &http.Client{}
+
+	resp, err := client.Do(req)
+
+	if err != nil {
+
+		return err
+
+	}
+
+	defer resp.Body.Close()
+
+	respBytes, err := io.ReadAll(resp.Body)
+
+	fmt.Println(respBytes)
+
+	return nil
 
 }
