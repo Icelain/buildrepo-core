@@ -1,12 +1,14 @@
 package inference
 
 import (
+	"buildrepo-core/internal/gitmanager"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"strings"
 )
 
 type Command int
@@ -17,6 +19,11 @@ const (
 	Output
 	Invalid
 )
+
+type InferenceResponse struct {
+	Content  []byte
+	Continue bool
+}
 
 const PROMPT string = `
 
@@ -112,18 +119,36 @@ func MatchCommand(cmd []byte) (Command, [][]byte) {
 
 }
 
-func HandleCommand(args [][]byte, cmdtype Command) {
+func HandleCommand(args [][]byte, cmdtype Command, repository *gitmanager.Repository) (InferenceResponse, error) {
 
 	switch cmdtype {
 
 	case ReadDir:
+		dirEntry, err := gitmanager.ReadDir(string(args[0]), repository)
+		if err != nil {
+
+			return InferenceResponse{}, err
+
+		}
+
+		response := strings.Join(dirEntry, "")
+		return InferenceResponse{Content: []byte(response), Continue: true}, nil
 
 	case ReadFile:
+		fileContent, err := gitmanager.ReadFile(string(args[0]), repository)
+		if err != nil {
+			return InferenceResponse{}, err
+		}
+		return InferenceResponse{Content: fileContent, Continue: true}, nil
 
 	case Output:
+		return InferenceResponse{Content: args[0], Continue: false}, nil
 
 	case Invalid:
+		return InferenceResponse{Content: []byte{}, Continue: false}, nil
 
 	}
+
+	return InferenceResponse{}, nil
 
 }
