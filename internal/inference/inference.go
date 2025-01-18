@@ -23,7 +23,7 @@ const PROMPT string = `
 
 `
 
-func Request(data []byte) error {
+func Request(dataInStream <-chan []byte, dataOutStream chan<- []byte) error {
 
 	var GROQ_API_KEY = os.Getenv("GROQ_API_KEY")
 	headers := make(http.Header)
@@ -35,7 +35,7 @@ func Request(data []byte) error {
 		"model": "llama-3.3-70b-versatile",
 		"messages": []map[string]string{{
 			"role":    "user",
-			"content": string(data),
+			"content": string(<-dataInStream),
 		},
 			{
 				"role":    "system",
@@ -44,36 +44,39 @@ func Request(data []byte) error {
 		},
 	}
 
-	requestBody := &bytes.Buffer{}
-	if err := json.NewEncoder(requestBody).Encode(content); err != nil {
-
-		return err
-
-	}
-
-	req, err := http.NewRequest(http.MethodPost, "https://api.groq.com/openai/v1/chat/completions", requestBody)
+	req, err := http.NewRequest(http.MethodPost, "https://api.groq.com/openai/v1/chat/completions", nil)
 	if err != nil {
 		return err
 	}
 
-	req.Header = headers
+	for {
 
-	client := &http.Client{}
+		requestBody := &bytes.Buffer{}
+		if err := json.NewEncoder(requestBody).Encode(content); err != nil {
 
-	resp, err := client.Do(req)
+			return err
 
-	if err != nil {
+		}
 
-		return err
+		req.Body = io.NopCloser(requestBody)
+		req.Header = headers
+
+		client := &http.Client{}
+
+		resp, err := client.Do(req)
+
+		if err != nil {
+
+			return err
+
+		}
+
+		defer resp.Body.Close()
+
+		respBytes, err := io.ReadAll(resp.Body)
+
+		dataOutStream <- respBytes
 
 	}
-
-	defer resp.Body.Close()
-
-	respBytes, err := io.ReadAll(resp.Body)
-
-	fmt.Println(string(respBytes))
-
-	return nil
 
 }

@@ -1,6 +1,7 @@
 package gitmanager
 
 import (
+	"io"
 	"os"
 
 	"github.com/go-git/go-git/v5"
@@ -40,5 +41,44 @@ func Clone(url string) (*Repository, error) {
 func Delete(repository *Repository) error {
 
 	return os.RemoveAll(repository.Path)
+
+}
+
+func ReadDir(path string, repository *Repository) ([]string, error) {
+
+	wt, err := repository.Worktree()
+	if err != nil {
+		return []string{}, err
+	}
+
+	direntry := []string{}
+
+	dir, err := wt.Filesystem.ReadDir(path)
+	if err != nil {
+		return []string{}, err
+	}
+
+	for _, v := range dir {
+
+		direntry = append(direntry, v.Name())
+
+	}
+
+	return direntry, nil
+}
+
+func ReadFile(path string, repository *Repository) ([]byte, error) {
+
+	wt, err := repository.Worktree()
+	if err != nil {
+		return []byte{}, err
+	}
+
+	file, err := wt.Filesystem.Open(path)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return io.ReadAll(file)
 
 }

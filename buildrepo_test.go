@@ -20,6 +20,18 @@ func Test_GetInstructions(t *testing.T) {
 
 	}
 
-	inference.Request([]byte(res))
+	sendChannel := make(chan []byte)
+	recvChannel := make(chan []byte)
+
+	go inference.Request(sendChannel, recvChannel)
+
+	for {
+
+		sendChannel <- []byte(res)
+		resp := <-recvChannel
+
+		cmd := inference.MatchCommand(resp)
+
+	}
 
 }
