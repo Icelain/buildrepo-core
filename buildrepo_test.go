@@ -2,6 +2,7 @@ package buildrepocore
 
 import (
 	"buildrepo-core/internal/env"
+	"buildrepo-core/internal/gitmanager"
 	"buildrepo-core/internal/inference"
 	"log"
 	"testing"
@@ -12,7 +13,13 @@ func Test_GetInstructions(t *testing.T) {
 	env.Init()
 
 	uri := "https://github.com/icelain/radio"
-	res, err := GetInstructions(uri)
+
+	repo, err := gitmanager.Clone(uri)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	res, err := GetInstructions(repo)
 
 	if err != nil {
 
@@ -31,7 +38,14 @@ func Test_GetInstructions(t *testing.T) {
 		resp := <-recvChannel
 
 		cmd, args := inference.MatchCommand(resp)
-		inference.HandleCommand(args, cmd)
+		apiResp, err := inference.HandleCommand(args, cmd, repo)
+		if err != nil {
+
+			t.Fatal(err)
+
+		}
+
+		res = string(apiResp.Content)
 
 	}
 

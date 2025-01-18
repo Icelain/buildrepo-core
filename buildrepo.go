@@ -6,14 +6,7 @@ import (
 	"strings"
 )
 
-func GetInstructions(repositoryUrl string) (string, error) {
-
-	repo, err := gitmanager.Clone(repositoryUrl)
-	if err != nil {
-
-		return "", err
-
-	}
+func GetInstructions(repo *gitmanager.Repository) (string, error) {
 
 	defer gitmanager.Delete(repo)
 
