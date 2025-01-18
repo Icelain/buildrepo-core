@@ -9,6 +9,15 @@ import (
 	"os"
 )
 
+type Command int
+
+const (
+	ReadFile Command = iota
+	ReadDir
+	Output
+	Invalid
+)
+
 const PROMPT string = `
 
 	You will be provided with a direntry of a git repository. Directories will be marked with [DIR] and files will be marked with [FILE].
@@ -78,5 +87,31 @@ func Request(dataInStream <-chan []byte, dataOutStream chan<- []byte) error {
 		dataOutStream <- respBytes
 
 	}
+
+}
+
+func MatchCommand(cmd []byte) (Command, [][]byte) {
+
+	args := bytes.Split(cmd, []byte(" "))
+
+	switch string(args[0]) {
+
+	case "READFILE":
+
+		return ReadFile, args[1:]
+
+	case "LISTDIR":
+		return ReadDir, args[1:]
+
+	case "OUTPUT":
+		return Output, args[1:]
+
+	}
+
+	return Invalid, [][]byte{}
+
+}
+
+func HandleCommand(args [][]byte, cmdargs Command) {
 
 }
