@@ -112,6 +112,18 @@ func MatchCommand(cmd []byte) (Command, [][]byte) {
 
 }
 
-func HandleCommand(args [][]byte, cmdargs Command) {
+func HandleCommand(args [][]byte, cmdtype Command) {
+
+	switch cmdtype {
+
+	case ReadDir:
+
+	case ReadFile:
+
+	case Output:
+
+	case Invalid:
+
+	}
 
 }

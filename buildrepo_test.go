@@ -30,7 +30,8 @@ func Test_GetInstructions(t *testing.T) {
 		sendChannel <- []byte(res)
 		resp := <-recvChannel
 
-		cmd := inference.MatchCommand(resp)
+		cmd, args := inference.MatchCommand(resp)
+		inference.HandleCommand(args, cmd)
 
 	}
 
