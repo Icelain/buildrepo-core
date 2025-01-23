@@ -44,7 +44,6 @@ func Test_GetInstructions(t *testing.T) {
 			t.Fatal(err)
 
 		}
-
 		res = string(apiResp.Content)
 
 	}
